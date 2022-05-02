@@ -1,0 +1,28 @@
+from django import forms
+
+USER_TYPES = [
+    ('student','Student'),
+    ('instructor','Instructor'),
+    ('databasemanager','Database Manager')
+]
+
+USER_TYPES_CREATE = [
+    ('student','Student'),
+    ('instructor','Instructor')
+]
+
+
+class UserLoginForm(forms.Form):
+    username=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Username'}))
+    password=forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
+    usertype=forms.CharField(label='Type Of User',widget=forms.Select(choices=USER_TYPES))
+
+class UserCreateForm(forms.Form):
+    usertype=forms.CharField(label='Type Of User',widget=forms.Select(choices=USER_TYPES_CREATE))
+    studentID = forms.IntegerField(label='Student ID Number')
+    username=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Username'}))
+    password=forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
+    name=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Name'}))
+    surname=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Surname'}))
+    email=forms.EmailField(label='Email')
+    departmentID = forms.IntegerField(label='Department ID Number')

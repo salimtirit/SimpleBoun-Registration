@@ -1,0 +1,162 @@
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  	<title>Home</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        table, th, td {
+            border: 1px solid;
+        }
+        .center {
+            margin-left: auto;
+            margin-right: auto;
+            justify-content: center;
+        }
+        form { 
+            margin: 0 auto; 
+            width:250px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div style="background-color:lavender; !important" class="jumbotron text-center bg-primary">
+            <h2> Welcome back {{username}}.</h2>
+    </div>
+    {% if action_fail %}
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Post creation failed</h4>
+        <p>You exceeded your post creation limit</p>
+    </div>
+    {% endif %}
+    <div class="container">
+        <label>Students</label>
+        <table class="center">
+            <colgroup>
+                <col span="1" style="width: 15%;">
+                <col span="1" style="width: 15%;">
+                <col span="1" style="width: 15%;">
+                <col span="1" style="width: 15%;">
+                <col span="1" style="width: 15%;">
+                <col span="1" style="width: 15%;">
+                <col span="1" style="width: 20%;">
+                <col span="1" style="width: 15%;">
+            </colgroup>
+            <tr>
+                <th>Student ID</th>
+                <th>GPA</th>
+                <th>Completed Credits</th>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Email</th>
+                <th>Department ID</th>
+            </tr>
+            {% for row in result_student %}
+            <tr>
+                {% for value in row %}
+                <td>
+                    {{value}}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <br>
+    <br>
+    <div class="container">
+        <table class="center">
+            <label>Instructors</label>
+            <colgroup>
+                <col span="1" style="width: 15%;">
+                <col span="1" style="width: 15%;">
+                <col span="1" style="width: 15%;">
+                <col span="1" style="width: 15%;">
+                <col span="1" style="width: 20%;">
+                <col span="1" style="width: 15%;">
+            </colgroup>
+            <tr>
+                <th>Username</th>
+                <th>Title</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Email</th>
+                <th>Department ID</th>
+            </tr>
+            {% for row in result_instructor %}
+            <tr>
+                {% for value in row %}
+                <td>
+                    {{value}}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <br>
+    <br>
+    <div class="container">
+        <label>Database Managers</label>
+        <table class="center">
+            <colgroup>
+                <col span="1" style="width: 15%;">
+            </colgroup>
+            <tr>
+                <th>Username</th>
+            </tr>
+            {% for row in result_database_manager %}
+            <tr>
+                {% for value in row %}
+                <td>
+                    {{value}}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <br>
+    <div class="center">
+        {% comment %} <form id="postform" class="form-group" method="POST" action="{%url 'createUser' %}">
+                {%csrf_token%}
+                <br>
+                <label>Create User:</label>
+                <br>
+            <input type="text" name="usertype" placeholder="User Type" required> 
+                <label for="u_type">User Type:</label>
+                <select name="u_type" id="u_type">
+                    <option value="student">Student</option>
+                    <option value="instructor">Instructor</option>
+                    <option value="databasemanager">Database Manager</option>
+                </select>
+                <br>
+                <input type="number" name="studentID" placeholder="Student ID" required>
+                <br>
+                <input type="text" name="username" placeholder="User Name" required>
+                <br>
+                <input type="password" name="password" placeholder="Password" required>
+                <br>
+                <input type="text" name="name" placeholder="Name" required>
+                <br>
+                <input type="text" name="surname" placeholder="Surname" required>
+                <br>
+                <input type="email" name="email" placeholder="Email" required>
+                <br>
+                <input type="number" name="departmentID" placeholder="Department ID" required>
+                <br>
+                <input type="submit" name="submit" value="Create User">
+                <br> 
+        </form>{% endcomment %}
+        <form class="form-group" method="POST" novalidate action="{% url 'createUser' %}">
+            {{create_user|crispy}}
+            {% csrf_token %}
+            <button type="submit" style="margin-top: 10px;"class="btn btn-success">Create User</button>	
+
+    </div>
+    <a href="{%url 'index' %}"> <p style="text-align:center">Logout</p></a>
+</body>
+</html>
