@@ -47,4 +47,7 @@ class GetCourses(forms.Form):
     username=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Instructor Username'}))
 
 class GetAverageGrade(forms.Form):
-    courseID = forms.IntegerField(label='Course ID Number')
+    courseID = forms.IntegerField(label='Course ID')
+
+class AddCourse(forms.Form):
+    courseID = forms.IntegerField(label='Course ID')

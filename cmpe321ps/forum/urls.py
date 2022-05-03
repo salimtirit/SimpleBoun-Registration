@@ -14,5 +14,7 @@ urlpatterns = [
     path('getInstructorsCourses',views.getInstructorsCourses,name="getInstructorsCourses"),
     path('instructorsCourses',views.instructorsCourses,name="instructorsCourses"),
     path('getAverageGrade',views.getAverageGrade,name="getAverageGrade"),
-    path('averageGrade',views.averageGrade,name="averageGrade")
+    path('averageGrade',views.averageGrade,name="averageGrade"),
+    path('allCourses',views.listGivenCourses,name="allCourses"),
+    path('addCourse',views.addCourse,name="addCourse")
 ]

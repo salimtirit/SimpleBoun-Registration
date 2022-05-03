@@ -1,4 +1,5 @@
 from cmath import pi
+from unittest import result
 from django.shortcuts import render
 from django.http import HttpResponse,HttpResponseRedirect
 from .forms import *
@@ -48,7 +49,8 @@ def homePage(req):
         getCourses = GetCourses()
         getAverageGrade = GetAverageGrade()
         return render(
-            req,'dbManagerHome.html',
+            req,
+            'dbManagerHome.html',
             {
                 "result_student":result_student,
                 "result_instructor":result_instructor,
@@ -61,6 +63,18 @@ def homePage(req):
                 'student_grades':getStudentGrade,
                 'get_courses':getCourses,
                 'average_grade':getAverageGrade
+            }
+        )
+    elif usertype == 'student':
+        isFailed=req.GET.get("fail",False)
+        addCourse=AddCourse()
+        return render(
+            req,
+            "studentHome.html",
+            {
+                "username":username,
+                "action_fail": isFailed,
+                "add_course":addCourse
             }
         )
     else:    
@@ -169,3 +183,25 @@ def averageGrade(req):
     isFailed=req.GET.get("fail",False) #Try to retrieve GET parameter "fail", if it's not given set it to False
 
     return render(req,'averageGrade.html',{"result":result,"action_fail":isFailed,"course_id":average_courseID})
+
+def listGivenCourses(req):
+    #result = run_statement("select c.courseID, c.name, i.surname, d.name, c.credits, c.classroomID, l.time_slot, c.quota, p.prerequisite from course c inner join department d on c.departmentID = d.departmentID  inner join instructor i  on c.instructor_username = i.username inner join lectured_in l on c.courseID = l.courseID and c.classroomID left join prerequisite_of p on c.courseID = p.subsequent order by courseID;")
+    result = run_statement("select c.courseID, c.name, i.surname, d.name, c.credits, c.classroomID, l.time_slot, c.quota,group_concat( p.prerequisite) from course c  inner join department d  on c.departmentID = d.departmentID  inner join instructor i  on c.instructor_username = i.username inner join lectured_in l on c.courseID = l.courseID and c.classroomID left join prerequisite_of p on c.courseID = p.subsequent group by c.courseID order by c.courseID;")
+    isFailed=req.GET.get("fail",False) #Try to retrieve GET parameter "fail", if it's not given set it to False
+    return render(req,'allCourses.html',{"result":result,"action_fail":isFailed})
+
+
+def addCourse(req):
+    courseID = req.POST["courseID"]
+    username = req.session["username"]
+    print(courseID)
+    result=run_statement(f"select count(*) from grades g where g.courseID={courseID} and g.studentID = (select studentID from student where name='{username}');") #Run the query in DB
+    result1 = run_statement(f"select count(*) from prerequisite_of where subsequent={courseID} and prerequisite not in (select courseID from grades where studentID=(select studentID from student where name='{username}'));")
+    print(result[0][0])
+    if result[0][0] > 0 or result1[0][0] > 0:
+        return HttpResponseRedirect('../forum/home?fail=true')
+    elif result1:
+        req.session["average_courseID"] = courseID
+        return HttpResponseRedirect("../forum/home")
+    else:
+        return HttpResponseRedirect('../forum/home?fail=true')

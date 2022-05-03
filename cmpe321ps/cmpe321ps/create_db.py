@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS Prerequisite_of(
   subsequent varchar(255),
 	prerequisite varchar(255),
 	PRIMARY KEY(subsequent,prerequisite),
-    FOREIGN KEY(subsequent) REFERENCES Course(courseID),
+    FOREIGN KEY(subsequent) REFERENCES Course(name),
     CONSTRAINT check_prereq
 		CHECK (prerequisite < subsequent)
 );""")
@@ -188,7 +188,7 @@ cursor.execute("""
 CREATE TRIGGER 	quota_restriction BEFORE INSERT ON Enrolled
 	FOR EACH ROW
 		IF (SELECT COUNT(*)
-			FROM EnrolledFilterCourses
+			FROM Enrolled
             WHERE CourseID = NEW.CourseID) >= (SELECT quota FROM Course WHERE CourseID = NEW.CourseID)
 		THEN
 			SIGNAL SQLSTATE '50001' SET MESSAGE_TEXT = 'THIS COURSE HAS NO QUOTA AVAILABLE';
