@@ -12,6 +12,11 @@ USER_TYPES_CREATE = [
     ('instructor','Instructor')
 ]
 
+INSTRUCTOR_TITLES = [
+    ('Assistant Professor','Assistant Professor'),
+    ('Associate Professor','Associate Professor'),
+    ('Professor','Professor')
+]
 
 class UserLoginForm(forms.Form):
     username=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Username'}))
@@ -22,8 +27,7 @@ class UserCreateForm(forms.Form):
     usertype=forms.CharField(label='Type Of User',widget=forms.Select(choices=USER_TYPES_CREATE))
     username=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Username'}))
     password=forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
-    #TODO make title dropdown
-    title=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Title (Only For Instructors)'})) 
+    title=forms.CharField(label='Title Of Instructor',widget=forms.Select(choices=INSTRUCTOR_TITLES))
     name=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Name'}))
     surname=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Surname'}))
     email=forms.EmailField(label='Email')
@@ -31,3 +35,13 @@ class UserCreateForm(forms.Form):
 
 class DeleteStudent(forms.Form):
     studentID = forms.IntegerField(label='Student ID')
+
+class UpdateTitle(forms.Form):
+    username=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Username'}))
+    title=forms.CharField(label='Title Of Instructor',widget=forms.Select(choices=INSTRUCTOR_TITLES))
+
+class GetStudentGrade(forms.Form):
+    studentID = forms.IntegerField(label='Student ID')
+
+class GetCourses(forms.Form):
+    username=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Instructor Username'}))
