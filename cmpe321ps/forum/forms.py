@@ -1,3 +1,4 @@
+from logging import PlaceHolder
 from django import forms
 
 USER_TYPES = [
@@ -19,10 +20,13 @@ class UserLoginForm(forms.Form):
 
 class UserCreateForm(forms.Form):
     usertype=forms.CharField(label='Type Of User',widget=forms.Select(choices=USER_TYPES_CREATE))
-    studentID = forms.IntegerField(label='Student ID Number')
     username=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Username'}))
     password=forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
+    title=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Title (Only For Instructors)'}))
     name=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Name'}))
     surname=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Surname'}))
     email=forms.EmailField(label='Email')
     departmentID = forms.IntegerField(label='Department ID Number')
+
+# class DeleteStudent(forms.Form):
+#     studentID = forms.IntegerField(label='Student ID')
