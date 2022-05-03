@@ -37,13 +37,28 @@ def homePage(req):
     usertype = req.session["usertype"]
     username = req.session["username"] #Retrieve the username of the logged-in user
     if usertype == "databasemanager":
-        result_student=run_statement(f"SELECT studentID, GPA, completed_credits, username, name, surname, email, departmentID FROM student;") #Run the query in DB
-        result_instructor=run_statement(f"SELECT username, title, name, surname, email, departmentID FROM instructor;") #Run the query in DB
+        result_student=run_statement(f"SELECT username, name, surname, email, departmentID, completed_credits, GPA FROM student ORDER BY completed_credits ASC;") #Run the query in DB
+        result_instructor=run_statement(f"SELECT username, name, surname, email, departmentID, title FROM instructor;") #Run the query in DB
         result_database_manager=run_statement(f"SELECT username FROM databasemanager;") #Run the query in DB
         isFailed=req.GET.get("fail",False) #Try to retrieve GET parameter "fail", if it's not given set it to False
         createuserform=UserCreateForm() #Use Django Form object to create a blank form for the HTML page
         deleteStudentForm=DeleteStudent()
-        return render(req,'dbManagerHome.html',{"result_student":result_student,"result_instructor":result_instructor,"result_database_manager":result_database_manager,"action_fail":isFailed,"username":username, "create_user":createuserform,'delete_student':deleteStudentForm})
+        updateTitleForm=UpdateTitle()
+        getStudentGrade = GetStudentGrade()
+        return render(
+            req,'dbManagerHome.html',
+            {
+                "result_student":result_student,
+                "result_instructor":result_instructor,
+                "result_database_manager":result_database_manager,
+                "action_fail":isFailed,
+                "username":username,
+                "create_user":createuserform,
+                'delete_student':deleteStudentForm,
+                'update_title':updateTitleForm,
+                'student_grades':getStudentGrade
+            }
+        )
     else:    
         result=run_statement(f"SELECT * FROM {usertype.strip()} WHERE username='{username}';") #Run the query in DB
         isFailed=req.GET.get("fail",False) #Try to retrieve GET parameter "fail", if it's not given set it to False
@@ -61,16 +76,15 @@ def createUser(req):
     title=req.POST["title"]
 
     if usertype == 'student':
-        run_statement(f"CALL CreateStudent('{username}','{password}','{name}','{surname}','{email}',{departmentID});")
         try:
-
+            run_statement(f"CALL CreateStudent('{username}','{password}','{name}','{surname}','{email}',{departmentID});")
             return HttpResponseRedirect("../forum/home")
         except Exception as e:
             print(str(e))
             return HttpResponseRedirect('../forum/home?fail=true')
     elif usertype == 'instructor':
-        run_statement(f"CALL CreateInstructor('{username}','{title}','{password}','{name}','{surname}','{email}',{departmentID});")
         try:
+            run_statement(f"CALL CreateInstructor('{username}','{title}','{password}','{name}','{surname}','{email}',{departmentID});")
             return HttpResponseRedirect("../forum/home")
         except Exception as e:
             print(str(e))
@@ -86,3 +100,50 @@ def deleteStudent(req):
     except Exception as e:
         print(str(e))
         return HttpResponseRedirect("../forum/home?fail=true")
+
+def updateTitle(req):
+    username = req.POST["username"]
+    title=req.POST["title"]
+
+    try:
+        run_statement(f"UPDATE Instructor SET title ='{title}' WHERE username = '{username}';")
+        return HttpResponseRedirect("../forum/home")
+    except Exception as e:
+        print(str(e))
+        return HttpResponseRedirect("../forum/home?fail=true")
+
+def getStudentGrades(req):
+    studentID = req.POST["studentID"]
+    print(studentID)
+    result=run_statement(f"SELECT * FROM student WHERE studentID={studentID};") #Run the query in DB
+
+    if result:
+        req.session["grade_studentID"] = studentID
+        return HttpResponseRedirect("../forum/studentGrades")
+    else:
+        return HttpResponseRedirect('../forum/home?fail=true')
+
+def studentGrades(req):
+    grade_studentID = req.session["grade_studentID"]
+    result = run_statement(f"select c.courseID, name, grade from course c, grades g where g.studentID = {grade_studentID} and c.courseID = g.courseID;")
+    isFailed=req.GET.get("fail",False) #Try to retrieve GET parameter "fail", if it's not given set it to False
+
+    return render(req,'studentGrades.html',{"result":result,"action_fail":isFailed,"studentID":grade_studentID})
+
+def getInstructorsCourses(req):
+    username = req.POST["username"]
+    print(username)
+    result=run_statement(f"SELECT * FROM student WHERE studentID={studentID};") #Run the query in DB
+
+    if result:
+        req.session["grade_studentID"] = studentID
+        return HttpResponseRedirect("../forum/studentGrades")
+    else:
+        return HttpResponseRedirect('../forum/home?fail=true')
+
+def instructorsCourses(req):
+    grade_studentID = req.session["grade_studentID"]
+    result = run_statement(f"select c.courseID, name, grade from course c, grades g where g.studentID = {grade_studentID} and c.courseID = g.courseID;")
+    isFailed=req.GET.get("fail",False) #Try to retrieve GET parameter "fail", if it's not given set it to False
+
+    return render(req,'studentGrades.html',{"result":result,"action_fail":isFailed,"studentID":grade_studentID})
