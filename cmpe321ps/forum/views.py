@@ -49,7 +49,6 @@ def homePage(req):
         isFailed=req.GET.get("fail",False) #Try to retrieve GET parameter "fail", if it's not given set it to False
         return render(req,'userHome.html',{"results":result,"action_fail":isFailed,"username":username})
 
-
 def createUser(req):
     #Retrieve data from the request body
     usertype=req.POST["usertype"]
@@ -62,21 +61,28 @@ def createUser(req):
     title=req.POST["title"]
 
     if usertype == 'student':
+        run_statement(f"CALL CreateStudent('{username}','{password}','{name}','{surname}','{email}',{departmentID});")
         try:
-            run_statement(f"CALL CreateStudent('{username}','{password}','{name}','{surname}','{email}',{departmentID})")
+
             return HttpResponseRedirect("../forum/home")
         except Exception as e:
             print(str(e))
             return HttpResponseRedirect('../forum/home?fail=true')
     elif usertype == 'instructor':
+        run_statement(f"CALL CreateInstructor('{username}','{title}','{password}','{name}','{surname}','{email}',{departmentID});")
         try:
-            run_statement(f"CALL CreateInstructor('{username}','{title}','{password}','{name}','{surname}','{email}',{departmentID})")
             return HttpResponseRedirect("../forum/home")
         except Exception as e:
             print(str(e))
             return HttpResponseRedirect('../forum/home?fail=true')
 
+
 def deleteStudent(req):
     studentID = req.POST["studentID"]
-
     print(studentID)
+    run_statement(f"DELETE FROM Student WHERE studentID = {studentID};")
+    try:
+        return HttpResponseRedirect("../forum/home")
+    except Exception as e:
+        print(str(e))
+        return HttpResponseRedirect("../forum/home?fail=true")
