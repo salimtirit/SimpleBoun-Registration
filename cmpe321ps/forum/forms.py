@@ -29,5 +29,5 @@ class UserCreateForm(forms.Form):
     email=forms.EmailField(label='Email')
     departmentID = forms.IntegerField(label='Department ID Number')
 
-# class DeleteStudent(forms.Form):
-#     studentID = forms.IntegerField(label='Student ID')
+class DeleteStudent(forms.Form):
+    studentID = forms.IntegerField(label='Student ID')
