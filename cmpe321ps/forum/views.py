@@ -45,6 +45,8 @@ def homePage(req):
         deleteStudentForm=DeleteStudent()
         updateTitleForm=UpdateTitle()
         getStudentGrade = GetStudentGrade()
+        getCourses = GetCourses()
+        getAverageGrade = GetAverageGrade()
         return render(
             req,'dbManagerHome.html',
             {
@@ -56,7 +58,9 @@ def homePage(req):
                 "create_user":createuserform,
                 'delete_student':deleteStudentForm,
                 'update_title':updateTitleForm,
-                'student_grades':getStudentGrade
+                'student_grades':getStudentGrade,
+                'get_courses':getCourses,
+                'average_grade':getAverageGrade
             }
         )
     else:    
@@ -133,17 +137,35 @@ def studentGrades(req):
 def getInstructorsCourses(req):
     username = req.POST["username"]
     print(username)
-    result=run_statement(f"SELECT * FROM student WHERE studentID={studentID};") #Run the query in DB
+    result=run_statement(f"SELECT * FROM instructor WHERE username='{username}';") #Run the query in DB
 
     if result:
-        req.session["grade_studentID"] = studentID
-        return HttpResponseRedirect("../forum/studentGrades")
+        req.session["class_instructor"] = username
+        return HttpResponseRedirect("../forum/instructorsCourses")
     else:
         return HttpResponseRedirect('../forum/home?fail=true')
 
 def instructorsCourses(req):
-    grade_studentID = req.session["grade_studentID"]
-    result = run_statement(f"select c.courseID, name, grade from course c, grades g where g.studentID = {grade_studentID} and c.courseID = g.courseID;")
+    username = req.session["class_instructor"]
+    result = run_statement(f"select c.courseID, c.name, r.classroomID, campus, time_slot  from course c, classroom r, lectured_in l where c.instructor_username='{username}' and c.courseID = l.courseID and r.classroomID = l.classroomID;") #Run the query in DB
     isFailed=req.GET.get("fail",False) #Try to retrieve GET parameter "fail", if it's not given set it to False
 
-    return render(req,'studentGrades.html',{"result":result,"action_fail":isFailed,"studentID":grade_studentID})
+    return render(req,'instructorsCourses.html',{"result":result,"action_fail":isFailed,"course_instructor":username})
+
+def getAverageGrade(req):
+    courseID = req.POST["courseID"]
+    print(courseID)
+    result=run_statement(f"SELECT * FROM course WHERE courseID='{courseID}';") #Run the query in DB
+    
+    if result:
+        req.session["average_courseID"] = courseID
+        return HttpResponseRedirect("../forum/averageGrade")
+    else:
+        return HttpResponseRedirect('../forum/home?fail=true')
+
+def averageGrade(req):
+    average_courseID = req.session["average_courseID"]
+    result = run_statement(f"select g.courseID, c.name, AVG(g.grade) from course c, grades g where g.courseID ={average_courseID} and g.courseID=c.courseID;") #Run the query in DB
+    isFailed=req.GET.get("fail",False) #Try to retrieve GET parameter "fail", if it's not given set it to False
+
+    return render(req,'averageGrade.html',{"result":result,"action_fail":isFailed,"course_id":average_courseID})
