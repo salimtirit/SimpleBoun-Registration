@@ -27,7 +27,7 @@
     </div>
     {% if action_fail %}
     <div class="alert alert-danger" role="alert">
-        <h4 class="alert-heading">Post creation failed</h4>
+        <h4 class="alert-heading">Action failed</h4>
         <p> Please check all of the information you have provided. </p>
     </div>
     {% endif %}
@@ -38,21 +38,19 @@
                 <col span="1" style="width: 15%;">
                 <col span="1" style="width: 15%;">
                 <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
                 <col span="1" style="width: 20%;">
+                <col span="1" style="width: 15%;">
+                <col span="1" style="width: 15%;">
                 <col span="1" style="width: 15%;">
             </colgroup>
             <tr>
-                <th>Student ID</th>
-                <th>GPA</th>
-                <th>Completed Credits</th>
                 <th>Username</th>
                 <th>Name</th>
                 <th>Surname</th>
                 <th>Email</th>
                 <th>Department ID</th>
+                <th>Completed Credits</th>
+                <th>GPA</th>
             </tr>
             {% for row in result_student %}
             <tr>
@@ -74,17 +72,17 @@
                 <col span="1" style="width: 15%;">
                 <col span="1" style="width: 15%;">
                 <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
                 <col span="1" style="width: 20%;">
+                <col span="1" style="width: 15%;">
                 <col span="1" style="width: 15%;">
             </colgroup>
             <tr>
                 <th>Username</th>
-                <th>Title</th>
                 <th>Name</th>
                 <th>Surname</th>
                 <th>Email</th>
                 <th>Department ID</th>
+                <th>Title</th>
             </tr>
             {% for row in result_instructor %}
             <tr>
@@ -127,12 +125,24 @@
             {% csrf_token %}
             <button type="submit" style="margin-top: 10px;"class="btn btn-success">Create User</button>	
         </form>
+        <br>
         <form class="form-group" method="POST" novalidate action="{% url 'deleteStudent' %}">
             {{delete_student|crispy}}
             {% csrf_token %}
             <button type="submit" style="margin-top: 10px;"class="btn btn-success">Delete User</button>	
         </form>
-
+        <br>
+        <form class="form-group" method="POST" novalidate action="{% url 'updateTitle' %}">
+            {{update_title|crispy}}
+            {% csrf_token %}
+            <button type="submit" style="margin-top: 10px;"class="btn btn-success">Update Title</button>	
+        </form>
+        <br>
+        <form class="form-group" method="POST" novalidate action="{% url 'getStudentGrades' %}">
+            {{student_grades|crispy}}
+            {% csrf_token %}
+            <button type="submit" style="margin-top: 10px;"class="btn btn-success">Get Student Grade</button>	
+        </form>
     </div>
 
     <a href="{%url 'index' %}"> <p style="text-align:center">Logout</p></a>
