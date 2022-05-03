@@ -23,7 +23,7 @@
 <body>
     <div class="wrapper">
         <div style="background-color:lavender; !important" class="jumbotron text-center bg-primary">
-            <h2> Grades Of Student With Student ID {{studentID}}</h2>
+            <h2> Courses Given By {{course_instructor}}</h2>
     </div>
     {% if action_fail %}
     <div class="alert alert-danger" role="alert">
@@ -38,11 +38,15 @@
                 <col span="1" style="width: 15%;">
                 <col span="1" style="width: 15%;">
                 <col span="1" style="width: 15%;">
+                <col span="1" style="width: 15%;">
+                <col span="1" style="width: 15%;">
             </colgroup>
             <tr>
                 <th>Course ID</th>
                 <th>Course Name</th>
-                <th>Grade</th>
+                <th>Classrooom ID</th>
+                <th>Campus</th>
+                <th>Time Slot</th>
 
             </tr>
             {% for row in result %}
