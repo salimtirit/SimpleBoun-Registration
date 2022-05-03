@@ -42,36 +42,41 @@ def homePage(req):
         result_database_manager=run_statement(f"SELECT username FROM databasemanager;") #Run the query in DB
         isFailed=req.GET.get("fail",False) #Try to retrieve GET parameter "fail", if it's not given set it to False
         createuserform=UserCreateForm() #Use Django Form object to create a blank form for the HTML page
-        return render(req,'dbManagerHome.html',{"result_student":result_student,"result_instructor":result_instructor,"result_database_manager":result_database_manager,"action_fail":isFailed,"username":username, "create_user":createuserform})
+        deleteStudentForm=DeleteStudent()
+        return render(req,'dbManagerHome.html',{"result_student":result_student,"result_instructor":result_instructor,"result_database_manager":result_database_manager,"action_fail":isFailed,"username":username, "create_user":createuserform,'delete_student':deleteStudentForm})
     else:    
         result=run_statement(f"SELECT * FROM {usertype.strip()} WHERE username='{username}';") #Run the query in DB
         isFailed=req.GET.get("fail",False) #Try to retrieve GET parameter "fail", if it's not given set it to False
         return render(req,'userHome.html',{"results":result,"action_fail":isFailed,"username":username})
-        
+
+
 def createUser(req):
     #Retrieve data from the request body
     usertype=req.POST["usertype"]
-    studentID=req.POST["studentID"]
     username=req.POST["username"]
     password=req.POST["password"]
     name=req.POST["name"]
     surname=req.POST["surname"]
     email=req.POST["email"]
     departmentID=req.POST["departmentID"]
-
-    ###
+    title=req.POST["title"]
 
     if usertype == 'student':
         try:
-            run_statement(f"CALL CreateStudent('{studentID}','{username}','{password}','{name}','{surname}','{email}','{departmentID}')")
+            run_statement(f"CALL CreateStudent('{username}','{password}','{name}','{surname}','{email}',{departmentID})")
             return HttpResponseRedirect("../forum/home")
         except Exception as e:
             print(str(e))
             return HttpResponseRedirect('../forum/home?fail=true')
     elif usertype == 'instructor':
         try:
-            run_statement(f"CALL CreateInstructor('{studentID}','{username}','{password}','{name}','{surname}','{email}','{departmentID}')")
+            run_statement(f"CALL CreateInstructor('{username}','{title}','{password}','{name}','{surname}','{email}',{departmentID})")
             return HttpResponseRedirect("../forum/home")
         except Exception as e:
             print(str(e))
             return HttpResponseRedirect('../forum/home?fail=true')
+
+def deleteStudent(req):
+    studentID = req.POST["studentID"]
+
+    print(studentID)
