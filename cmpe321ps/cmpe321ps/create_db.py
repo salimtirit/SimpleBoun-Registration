@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS Department(
 
 cursor.execute("""
 CREATE TABLE Student(
-	studentID int not null UNIQUE,
+	studentID int not null UNIQUE AUTO_INCREMENT,
     GPA FLOAT(24),
     completed_credits int not null,
 	username varchar(255),
@@ -205,16 +205,16 @@ WHERE c.departmentID = department_id
 END;""")
 
 cursor.execute("""
-CREATE PROCEDURE CreateInstructor(IN username varchar(255), IN title varchar(255), IN password varchar(255), IN name varchar(255), IN surname	varchar(255), IN email varchar(255), IN departmentID int)
+CREATE PROCEDURE CreateStudent(IN username varchar(255), IN password varchar(255), IN name varchar(255), IN surname varchar(255), IN email varchar(255), IN departmentID int)
 BEGIN
-INSERT INTO Instructor VALUES (username,title,password,name,surname,email,departmentID);
+INSERT INTO Student VALUES (0, 0, 0, username, password, name, surname, email, departmentID);
 END;
 """)
 
 cursor.execute("""
-CREATE PROCEDURE CreateStudent(IN studentID int, IN username varchar(255), IN password varchar(255), IN name varchar(255), IN surname varchar(255), IN email varchar(255), IN departmentID int)
+CREATE PROCEDURE CreateInstructor(IN username varchar(255), IN title varchar(255), IN password varchar(255), IN name varchar(255), IN surname	varchar(255), IN email varchar(255), IN departmentID int)
 BEGIN
-INSERT INTO Instructor VALUES (studentID, 0, 0, username, password, name, surname, email, departmentID);
+INSERT INTO Instructor VALUES (username,title,password,name,surname,email,departmentID);
 END;
 """)
 
@@ -264,6 +264,10 @@ INSERT INTO Course VALUES (1, 'CMPE321', 1, 5, 'Sami', 2, 100)
 
 cursor.execute("""
 INSERT INTO Course VALUES (2, 'EE101', 3, 5, 'Kevser', 1, 10)
+""")
+
+cursor.execute(""""
+INSERT INTO databasemanager VALUES ('admin','admin');
 """)
 
 connection.commit()
