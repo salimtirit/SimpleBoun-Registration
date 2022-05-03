@@ -22,7 +22,8 @@ class UserCreateForm(forms.Form):
     usertype=forms.CharField(label='Type Of User',widget=forms.Select(choices=USER_TYPES_CREATE))
     username=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Username'}))
     password=forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
-    title=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Title (Only For Instructors)'}))
+    #TODO make title dropdown
+    title=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Title (Only For Instructors)'})) 
     name=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Name'}))
     surname=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Surname'}))
     email=forms.EmailField(label='Email')
