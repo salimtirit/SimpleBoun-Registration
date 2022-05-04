@@ -1,5 +1,6 @@
 import mysql.connector
 import environ
+from hashlib import sha256
 
 env = environ.Env()
 environ.Env.read_env()
@@ -134,7 +135,11 @@ CREATE TABLE IF NOT EXISTS Grades(
 		ON DELETE CASCADE,
 	FOREIGN KEY(courseID) REFERENCES Course(courseID)
 		ON UPDATE CASCADE
-		ON DELETE NO ACTION
+		ON DELETE NO ACTION,
+	CONSTRAINT check_grade_upper
+		CHECK (grade <= 4.0),
+	CONSTRAINT check_grade_lower
+		CHECK (grade >= 0.0)
 );""")
 
 cursor.execute("""
@@ -193,6 +198,35 @@ CREATE TRIGGER 	quota_restriction BEFORE INSERT ON Enrolled
 		THEN
 			SIGNAL SQLSTATE '50001' SET MESSAGE_TEXT = 'THIS COURSE HAS NO QUOTA AVAILABLE';
 		END IF;""")
+
+cursor.execute("""
+CREATE TRIGGER 	classroom_capacity BEFORE INSERT ON Course
+	FOR EACH ROW
+		IF (SELECT capacity
+			FROM Classroom
+            WHERE classroomID = NEW.classroomID) < NEW.quota
+		THEN
+			SIGNAL SQLSTATE '50001' SET MESSAGE_TEXT = 'THIS CLASSROOM IS TOO SMALL FOR THIS COURSE';
+		END IF;""")
+
+cursor.execute("""
+CREATE TRIGGER 	adjust_gpa AFTER INSERT ON Grades
+	FOR EACH ROW 
+    BEGIN
+		DECLARE comp_cred INT;
+        DECLARE current_gpa FLOAT(24);
+        SET comp_cred = (SELECT completed_credits FROM Student WHERE studentID= NEW.studentID);
+        SET current_gpa = (SELECT GPA FROM Student WHERE studentID= NEW.studentID);
+        
+        
+        UPDATE Student
+		SET 
+        GPA = ((comp_cred*current_gpa) + ((SELECT credits FROM Course WHERE CourseID = NEW.CourseID) * NEW.grade)) / (comp_cred+(SELECT credits FROM Course WHERE CourseID = NEW.CourseID)),
+		completed_credits = (SELECT credits FROM Course WHERE CourseID = NEW.CourseID) + comp_cred
+		WHERE 
+			studentID = NEW.studentID; END
+""")
+
 
 cursor.execute("""
 CREATE PROCEDURE FilterCourses(IN department_id int, IN campus_ varchar(255), IN min_credits int, IN max_credits int)
