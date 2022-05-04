@@ -13,7 +13,6 @@
             margin-left: auto;
             margin-right: auto;
             justify-content: center;
-            align-items: center;
         }
         form { 
             margin: 0 auto; 
@@ -24,33 +23,40 @@
 <body>
     <div class="wrapper">
         <div style="background-color:lavender; !important" class="jumbotron text-center bg-primary">
-            <h2> Welcome back {{username}}.</h2>
+            <h2> Taken Courses </h2>
     </div>
     {% if action_fail %}
     <div class="alert alert-danger" role="alert">
-        <h4 class="alert-heading">Action failed</h4>
+        <h4 class="alert-heading">Courses Could Not Found</h4>
         <p> Please check all of the information you have provided. </p>
     </div>
     {% endif %}
+    <div class="container">
+        <table class="center">
+            <colgroup>
+                <col span="1" style="width: 10%;">
+                <col span="1" style="width: 10%;">
+                <col span="1" style="width: 10%;">
+            </colgroup>
+            <tr>
+                <th>Course ID</th>
+                <th>Course Name</th>
+                <th>Grade</th>
 
-    <br>
-    <div class="center">
-        <form action="{% url 'allCourses' %}">
-            <button type="submit" style="margin-top: 10px;"  class="btn btn-success" >Show Currently Open Courses</button>
-        </form>
-        <br>
-        <form class="form-group" method="POST" novalidate action="{% url 'addCourse' %}">
-            {{add_course|crispy}}
-            {% csrf_token %}
-            <button type="submit" style="margin-top: 10px;"class="btn btn-success">Add Course</button>	
-        </form>
-        <br>
-        <form action="{% url 'takenCourses' %}">
-            <button type="submit" style="margin-top: 10px;"  class="btn btn-success" >Show Taken Courses</button>
-        </form>
+            </tr>
+            {% for row in result %}
+            <tr>
+                {% for value in row %}
+                <td>
+                    {{value}}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
     </div>
-
-    <a href="{%url 'index' %}"> <p style="text-align:center">Logout</p></a>
+    <br>
+    <a href="{%url 'homePage' %}"> <p style="text-align:center">Go Back</p></a>
 
 </body>
 </html>

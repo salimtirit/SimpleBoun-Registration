@@ -198,10 +198,22 @@ def addCourse(req):
     result=run_statement(f"select count(*) from grades g where g.courseID={courseID} and g.studentID = (select studentID from student where name='{username}');") #Run the query in DB
     result1 = run_statement(f"select count(*) from prerequisite_of where subsequent={courseID} and prerequisite not in (select courseID from grades where studentID=(select studentID from student where name='{username}'));")
     print(result[0][0])
+    print(result1[0][0])
     if result[0][0] > 0 or result1[0][0] > 0:
         return HttpResponseRedirect('../forum/home?fail=true')
-    elif result1:
-        req.session["average_courseID"] = courseID
-        return HttpResponseRedirect("../forum/home")
     else:
-        return HttpResponseRedirect('../forum/home?fail=true')
+        try:
+            run_statement(f"insert into enrolled values((select studentID from student where name='{username}'),'{courseID}');")
+            return HttpResponseRedirect("../forum/home")
+        except Exception as e:
+            print(str(e))
+            return HttpResponseRedirect('../forum/home?fail=true')
+
+def takenCourses(req):
+    username = req.session["username"]
+    studentID=run_statement(f"select studentID from student where name='{username}'")
+    studentID = studentID[0][0]
+    result = run_statement(f"select c.courseId, c.name, grade from course c ,(select courseID, grade from grades where studentID={studentID} union all  select courseID, Null as col3 from enrolled where studentID={studentID}) as a where c.courseID = a.courseID;")
+    isFailed=req.GET.get("fail",False) #Try to retrieve GET parameter "fail", if it's not given set it to False
+    return render(req,'takenCourses.html',{"result":result,"action_fail":isFailed})
+
