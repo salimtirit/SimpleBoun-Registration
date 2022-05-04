@@ -16,6 +16,9 @@ urlpatterns = [
     path('getAverageGrade',views.getAverageGrade,name="getAverageGrade"),
     path('averageGrade',views.averageGrade,name="averageGrade"),
     path('allCourses',views.listGivenCourses,name="allCourses"),
+    path('allStudents',views.listStudents,name="allStudents"),
+    path('allInstructors',views.listInstructors,name="allInstructors"),
+    path('allDBManagers',views.listDBManagers,name="allDBManagers"),
     path('addCourse',views.addCourse,name="addCourse"),
     path('takenCourses',views.takenCourses,name="takenCourses")
 ]
