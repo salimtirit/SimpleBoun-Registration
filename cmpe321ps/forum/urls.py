@@ -20,5 +20,7 @@ urlpatterns = [
     path('allInstructors',views.listInstructors,name="allInstructors"),
     path('allDBManagers',views.listDBManagers,name="allDBManagers"),
     path('addCourse',views.addCourse,name="addCourse"),
-    path('takenCourses',views.takenCourses,name="takenCourses")
+    path('takenCourses',views.takenCourses,name="takenCourses"),
+    path('getFilteredCourses',views.getFilteredCourses,name="getFilteredCourses"),
+    path('filteredCourses',views.filteredCourses,name="filteredCourses")
 ]

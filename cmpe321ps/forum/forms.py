@@ -51,3 +51,9 @@ class GetAverageGrade(forms.Form):
 
 class AddCourse(forms.Form):
     courseID = forms.IntegerField(label='Course ID')
+
+class FilterCourse(forms.Form):
+    departmentID = forms.IntegerField(label='Department ID')
+    campus=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Campus'}))
+    minCredits = forms.IntegerField(label='Minimum Credits')
+    maxCredits = forms.IntegerField(label='Maximum Credits')

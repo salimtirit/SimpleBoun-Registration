@@ -62,13 +62,15 @@ def homePage(req):
     elif usertype == 'student':
         isFailed=req.GET.get("fail",False)
         addCourse=AddCourse()
+        filterCourse = FilterCourse()
         return render(
             req,
             "studentHome.html",
             {
                 "username":username,
                 "action_fail": isFailed,
-                "add_course":addCourse
+                "add_course":addCourse,
+                "filtered_courses":filterCourse
             }
         )
     else:    
@@ -224,3 +226,36 @@ def takenCourses(req):
     isFailed=req.GET.get("fail",False) #Try to retrieve GET parameter "fail", if it's not given set it to False
     return render(req,'takenCourses.html',{"result":result,"action_fail":isFailed})
 
+def getFilteredCourses(req):
+    departmentID = req.POST["departmentID"]
+    campus = req.POST["campus"]
+    minCredits = req.POST["minCredits"]
+    maxCredits = req.POST["maxCredits"]
+
+    result1 = False
+    result2 = False
+    if len(str(departmentID))>0:
+        result1=run_statement(f"SELECT * FROM department WHERE departmentID={departmentID};") #Run the query in DB
+    
+    if len(str(campus))>0:
+        result2=run_statement(f"SELECT * FROM classroom WHERE campus='{campus}';") #Run the query in DB
+    
+    if result1 and result2 and len(str(minCredits))>0 and len(str(maxCredits))>0 and maxCredits>minCredits:
+        req.session["departmentID"] = departmentID
+        req.session["campus"] = campus
+        req.session["minCredits"] = minCredits
+        req.session["maxCredits"] = maxCredits
+        return HttpResponseRedirect("../forum/filteredCourses")
+    else:
+        return HttpResponseRedirect('../forum/home?fail=true')
+
+def filteredCourses(req):
+    departmentID = req.session["departmentID"]
+    campus = req.session["campus"]
+    minCredits = req.session["minCredits"]
+    maxCredits = req.session["maxCredits"]
+
+    result=run_statement(f"CALL FilterCourses({departmentID},'{campus}',{minCredits},{maxCredits});") #Run the query in DB
+    isFailed=req.GET.get("fail",False) #Try to retrieve GET parameter "fail", if it's not given set it to False
+
+    return render(req,'filteredCourses.html',{"result":result,"action_fail":isFailed})
