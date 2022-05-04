@@ -1,0 +1,86 @@
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  	<title>Home</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        table, th, td {
+            border: 1px solid;
+        }
+        .center {
+            margin-left: auto;
+            margin-right: auto;
+            justify-content: center;
+        }
+        form { 
+            margin: 0 auto; 
+            width:250px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div style="background-color:lavender; !important" class="jumbotron text-center bg-primary">
+            <h2> Welcome back {{username}}.</h2>
+    </div>
+    {% if action_fail %}
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Action failed</h4>
+        <p> Please check all of the information you have provided. </p>
+    </div>
+    {% endif %}
+    <div class="center">
+        <form action="{% url 'allStudents' %}">
+            <button type="submit" style="margin-top: 10px;"  class="btn btn-success" >Show All Students</button>
+        </form>
+        <form action="{% url 'allInstructors' %}">
+            <button type="submit" style="margin-top: 10px;"  class="btn btn-success" >Show All Instructors</button>
+        </form>
+        <form action="{% url 'allDBManagers' %}">
+            <button type="submit" style="margin-top: 10px;"  class="btn btn-success" >Show All Database Managers</button>
+        </form>
+        <br>
+        <br>
+        <form class="form-group" method="POST" novalidate action="{% url 'createUser' %}">
+            {{create_user|crispy}}
+            {% csrf_token %}
+            <button type="submit" style="margin-top: 10px;"class="btn btn-success">Create User</button>	
+        </form>
+        <br>
+        <form class="form-group" method="POST" novalidate action="{% url 'deleteStudent' %}">
+            {{delete_student|crispy}}
+            {% csrf_token %}
+            <button type="submit" style="margin-top: 10px;"class="btn btn-success">Delete User</button>	
+        </form>
+        <br>
+        <form class="form-group" method="POST" novalidate action="{% url 'updateTitle' %}">
+            {{update_title|crispy}}
+            {% csrf_token %}
+            <button type="submit" style="margin-top: 10px;"class="btn btn-success">Update Title</button>	
+        </form>
+        <br>
+        <form class="form-group" method="POST" novalidate action="{% url 'getStudentGrades' %}">
+            {{student_grades|crispy}}
+            {% csrf_token %}
+            <button type="submit" style="margin-top: 10px;"class="btn btn-success">Get Student Grade</button>	
+        </form>
+        <br>
+        <form class="form-group" method="POST" novalidate action="{% url 'getInstructorsCourses' %}">
+            {{get_courses|crispy}}
+            {% csrf_token %}
+            <button type="submit" style="margin-top: 10px;"class="btn btn-success">Get Instructor's Courses</button>	
+        </form>
+        <br>
+        <form class="form-group" method="POST" novalidate action="{% url 'getAverageGrade' %}">
+            {{average_grade|crispy}}
+            {% csrf_token %}
+            <button type="submit" style="margin-top: 10px;"class="btn btn-success">Get Average Grade Of Course</button>	
+        </form>
+    </div>
+
+    <a href="{%url 'index' %}"> <p style="text-align:center">Logout</p></a>
+
+</body>
+</html>
