@@ -40,3 +40,7 @@ Then, you can run this command to create up and fill relevant tables:
 Finally, run the command:
 ```python manage.py runserver```
 and check whether the website is accessible at: [http://127.0.0.1:8000/forum/](http://127.0.0.1:8000/forum/)
+
+### ER Diagram ###
+![ER Model](https://user-images.githubusercontent.com/64011660/231539618-f590339b-ef6e-467f-bd64-aca1b461aa03.jpg)
+
